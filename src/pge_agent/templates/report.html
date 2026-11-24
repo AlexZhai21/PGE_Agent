@@ -51,13 +51,13 @@ tr { break-inside:avoid; } thead { display:table-header-group; }
 <tr><td>Run ID</td><td>{{ run.run_id }}</td></tr>
 </tbody></table>
 <p class="notice">{% if run.demo %}<strong>SYNTHETIC DEMONSTRATION — NOT A PG&amp;E FORECAST.</strong><br>{% endif %}
-Review status: {{ run.review_status }}{% if run.reviewer %} · Reviewed by {{ run.reviewer }}{% endif %}.
+{% if run.report_edits %}Engineer-edited passages: {{ run.report_edits.keys()|join(", ")|replace("_", " ") }}.<br>{% endif %}Review status: {{ run.review_status }}{% if run.reviewer %} · Reviewed by {{ run.reviewer }}{% endif %}.
 {% if run.validation_errors %} Validation failed; results must not be relied upon.{% endif %}</p>
 <div class="footer">PG&amp;E Internal — Confidential<small>Internal</small></div>
 </section>
 <main class="main">
 <h2>Executive Summary</h2>
-{% for claim in run.assessment.summary %}<p>{{ claim.text }}{% if claim.assumption %} <span class="muted">(Limitation / assumption)</span>{% endif %}
+{% for claim in run.assessment.summary %}<p>{{ passage('summary_' ~ loop.index0, claim.text) }}{% if claim.assumption %} <span class="muted">(Limitation / assumption)</span>{% endif %}
 {% if claim.evidence_ids or claim.calculation_ids %}<br><span class="source">References: {{ (claim.evidence_ids + claim.calculation_ids)|join(', ') }}</span>{% endif %}</p>{% endfor %}
 {% if run.validation_errors %}<div class="notice error"><strong>Validation issues</strong><ul>{% for error in run.validation_errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
 <h2>Project Snapshot</h2>
@@ -74,7 +74,7 @@ Review status: {{ run.review_status }}{% if run.reviewer %} · Reviewed by {{ ru
 {% for name in milestone_names %}{% if name not in f.milestones|map(attribute='name')|list %}<tr><td>{{ name }}</td><td>{% if name=='External Target IFC' %}{{ p.target_ifc|display }}{% else %}Not provided{% endif %}</td><td>Unavailable</td><td>Unavailable</td><td>Awaiting component result</td></tr>{% endif %}{% endfor %}
 </tbody></table>
 {% if p.proposed_milestones %}<p><strong>Engineer-proposed milestones (preserved inputs):</strong></p><ul>{% for name,dt in p.proposed_milestones.items() %}<li>{{ name }}: {{ dt }}</li>{% endfor %}</ul>{% endif %}
-<p><strong>Schedule Status:</strong> {{ f.schedule_status }}</p><p><strong>Critical Path Warning:</strong> {{ f.critical_path_warning }}</p>
+<p><strong>Schedule Status:</strong> {{ f.schedule_status }}</p><p><strong>Critical Path Warning:</strong> {{ passage('risk_warning', f.critical_path_warning) }}</p>
 <h3>Phase breakdown</h3>
 <table><thead><tr><th>Phase</th><th>Duration (wks)</th><th>Hours</th><th>Key Milestones</th></tr></thead><tbody>{% for row in f.phases %}<tr><td>{{ row.name }}</td><td>{{ row.duration_weeks|display }}</td><td>{{ row.hours|display }}</td><td>{{ row.key_milestones }}</td></tr>{% else %}<tr><td colspan="4">Phase allocation unavailable; no allocation assumed.</td></tr>{% endfor %}</tbody></table>
 <p><strong>Critical path drivers:</strong></p><ul>{% for item in f.critical_path_drivers %}<li>{{ item }}</li>{% else %}<li>Unavailable</li>{% endfor %}</ul>
@@ -83,7 +83,7 @@ Review status: {{ run.review_status }}{% if run.reviewer %} · Reviewed by {{ ru
 {% for phase,value in f.hours.phases.items() %}{% if phase not in hour_categories %}<tr><th>{{ phase }}</th><td>{{ value|display }}</td></tr>{% endif %}{% endfor %}
 <tr class="total"><th>TOTAL</th><td>{{ f.hours.total|display }}</td></tr></tbody></table>
 <p><strong>Low / high:</strong> {{ f.hours.low|display }} / {{ f.hours.high|display }}<br><strong>Confidence:</strong> {{ f.hours.confidence }}<br><strong>Comparable projects referenced:</strong> {{ run.history.comparables|map(attribute='project_id')|join(', ') or 'Unavailable' }}<br><strong>Notes:</strong> {{ f.hours.notes|display }}</p>
-<h2>Resource Plan</h2><p>{{ f.resource_overview }}</p>
+<h2>Resource Plan</h2><p>{{ passage('resource_overview', f.resource_overview) }}</p>
 <table><thead><tr><th>Role</th><th>Expected Load</th><th>Notes</th></tr></thead><tbody>{% for row in f.resources %}<tr><td>{{ row.role }}</td><td>{{ row.expected_load }}</td><td>{{ row.notes }}</td></tr>{% else %}<tr><td colspan="3">Unavailable</td></tr>{% endfor %}</tbody></table>
 <p><strong>Internal capacity concerns:</strong></p><ul>{% for item in f.capacity_concerns %}<li>{{ item }}</li>{% else %}<li>Not assessed</li>{% endfor %}</ul>
 <h2>Long Lead Materials</h2>
@@ -91,12 +91,12 @@ Review status: {{ run.review_status }}{% if run.reviewer %} · Reviewed by {{ ru
 <h3>Material Schedule Table</h3>
 {% for row in f.materials %}<table class="snapshot"><tbody>{% for label,value in [('Material',row.name),('Lead Time Weeks',row.lead_weeks),('Need-By Date',row.need_by),('Order-By Date',row.order_by),('Buffered Order-By Date',row.buffered_order_by),('Required Engineering Action Date',row.engineering_action_date),('Critical Path Impact',row.critical_path),('Status',row.status),('Notes',row.notes)] %}<tr><th>{{ label }}</th><td>{{ value|display }}</td></tr>{% endfor %}</tbody></table>{% else %}<p>Unavailable</p>{% endfor %}
 <h2>Permitting &amp; Regulatory</h2>
-<table><thead><tr><th>Permit</th><th>Turnaround (wks)</th><th>Notes</th></tr></thead><tbody>{% for row in f.permits %}<tr><td>{{ row.name }}</td><td>{{ row.turnaround_weeks|display }}</td><td>{{ row.notes }}</td></tr>{% else %}<tr><td colspan="3">Unavailable</td></tr>{% endfor %}</tbody></table><p>Schedule impact summary: {{ f.permitting_summary }}</p>
+<table><thead><tr><th>Permit</th><th>Turnaround (wks)</th><th>Notes</th></tr></thead><tbody>{% for row in f.permits %}<tr><td>{{ row.name }}</td><td>{{ row.turnaround_weeks|display }}</td><td>{{ row.notes }}</td></tr>{% else %}<tr><td colspan="3">Unavailable</td></tr>{% endfor %}</tbody></table><p>Schedule impact summary: {{ passage('permitting_summary', f.permitting_summary) }}</p>
 <h2>Top Risks &amp; Concerns</h2>
 <table><thead><tr><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Mitigation</th></tr></thead><tbody>{% for row in f.risks %}<tr><td>{{ row.description }}<br><span class="source">{{ row.evidence_ids|join(', ') }}</span></td><td>{{ row.likelihood }}</td><td>{{ row.impact }}</td><td>{{ row.mitigation }}</td></tr>{% else %}<tr><td colspan="4">Not assessed</td></tr>{% endfor %}</tbody></table>
 {% if p.engineer_risks %}<p><strong>Engineer-added risks — awaiting assessment:</strong></p><ul>{% for risk in p.engineer_risks %}<li>{{ risk }}</li>{% endfor %}</ul>{% endif %}
-<h2>Roadblocks &amp; Critical Path</h2><p>Current known roadblocks:</p><ul>{% for item in f.roadblocks %}<li>{{ item }}</li>{% else %}<li>Not assessed</li>{% endfor %}</ul><p>Critical path summary: {{ f.critical_path_summary }}</p>
-<h2>Recommended Next Steps</h2><ol>{% for item in run.assessment.next_steps %}<li>{{ item }}</li>{% endfor %}</ol>
+<h2>Roadblocks &amp; Critical Path</h2><p>Current known roadblocks:</p><ul>{% for item in f.roadblocks %}<li>{{ item }}</li>{% else %}<li>Not assessed</li>{% endfor %}</ul><p>Critical path summary: {{ passage('critical_path_summary', f.critical_path_summary) }}</p>
+<h2>Recommended Next Steps</h2><ol>{% for item in run.assessment.next_steps %}<li>{{ passage('step_' ~ loop.index0, item) }}</li>{% endfor %}</ol>
 <h2>Assumptions &amp; Caveats</h2><ul>{% for item in run.assessment.limitations %}<li>{{ item }}</li>{% endfor %}</ul>
 <h3>Open inputs and rule questions</h3><table><thead><tr><th>Question</th><th>Owner</th><th>Forecast impact</th></tr></thead><tbody>{% for issue in run.issues %}<tr><td>{{ issue.question }}</td><td>{{ issue.owner }}</td><td>{{ issue.affected_output }}</td></tr>{% endfor %}</tbody></table>
 <h3>Source basis</h3>

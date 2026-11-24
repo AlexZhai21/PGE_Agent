@@ -12,11 +12,17 @@ def display(value):
     return str(value)
 
 
-def render_report(run):
+def render_report(run, editor_links=False):
+    from markupsafe import Markup, escape
+    def passage(key, original):
+        value = escape(run.report_edits.get(key, original))
+        if editor_links:
+            return Markup('<a style="color:inherit;text-decoration:none" href="https://report-field.invalid/{}">{}</a>').format(key,value)
+        return value
     env = Environment(loader=FileSystemLoader(str(files("pge_agent") / "templates")),
                       autoescape=select_autoescape(["html"]))
     env.filters["display"] = display
-    return env.get_template("report.html").render(run=run,p=run.project,f=run.forecast,
+    return env.get_template("report.html").render(passage=passage,run=run,p=run.project,f=run.forecast,
         hour_categories=["Scoping","30% Design","60% Design","90% / IFC","Construction Support","Closeout"],
         milestone_names=["Kickoff / Scoping Complete","30% Design Complete","60% Design Complete",
                          "Permit Package Ready","Permit Submit-By","Long-Lead Material Identification",

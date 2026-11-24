@@ -55,6 +55,6 @@ def compare_runs(old, new):
                     diff(a.get(key), b.get(key), f"{path}.{key}")
         elif a != b:
             changes.append({"field":path,"before":a,"after":b})
-    for section in ("project", "forecast", "issues", "validation_errors"):
+    for section in ("project", "forecast", "issues", "validation_errors", "report_edits"):
         diff(old.model_dump(mode="json")[section],new.model_dump(mode="json")[section],section)
     return changes

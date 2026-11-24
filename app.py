@@ -152,14 +152,14 @@ with tabs[1]:
             st.error(f"Could not save inputs: {exc}")
 
 with tabs[2]:
-    st.subheader("Component integration")
-    mode=st.radio("Results source",["Default / demonstration adapters","Group 1 and 2 JSON responses"],horizontal=True)
-    history_upload=forecast_upload=None
-    if mode=="Group 1 and 2 JSON responses":
-        history_upload=st.file_uploader("Group 1 historical context JSON",type=["json"],key="history-json")
-        forecast_upload=st.file_uploader("Group 2 forecast JSON",type=["json"],key="forecast-json")
-    st.caption(f"Current input fingerprint: {fingerprint(st.session_state.project)}")
-    st.download_button("Download component input JSON",st.session_state.project.model_dump_json(indent=2),"project.json","application/json")
+    with st.expander("Integration settings"):
+        mode=st.radio("Results source",["Default / demonstration adapters","Group 1 and 2 JSON responses"],horizontal=True)
+        history_upload=forecast_upload=None
+        if mode=="Group 1 and 2 JSON responses":
+            history_upload=st.file_uploader("Group 1 historical context JSON",type=["json"],key="history-json")
+            forecast_upload=st.file_uploader("Group 2 forecast JSON",type=["json"],key="forecast-json")
+        st.caption(f"Current input fingerprint: {fingerprint(st.session_state.project)}")
+        st.download_button("Download component input JSON",st.session_state.project.model_dump_json(indent=2),"project.json","application/json")
     if st.button("Generate and save report",type="primary"):
         try:
             retriever=forecaster=None
@@ -188,9 +188,34 @@ with tabs[2]:
         html=render_report(run)
         st.download_button("Download formatted report",html,f"forecast-{run.run_id[:8]}.html","text/html")
         st.download_button("Download assessment JSON",run.model_dump_json(indent=2),f"assessment-{run.run_id[:8]}.json","application/json")
-        st.caption("Open the HTML report in your browser and print to PDF. Use Letter paper, enable background graphics, and disable browser-added headers and footers.")
-        import streamlit.components.v1 as components
-        components.html(html,height=850,scrolling=True)
+        if st.toggle("Open editable PDF", key="show_pdf"):
+            from pathlib import Path
+            import streamlit.components.v1 as components
+            from pge_agent.pdf_review import pdf_preview, revised_report
+            from playwright.sync_api import Error as BrowserError
+            try:
+                cached = st.session_state.get("pdf_preview")
+                identity = (run.run_id, run.review_status)
+                if not cached or cached[0] != identity:
+                    cached = (identity, pdf_preview(run))
+                    st.session_state.pdf_preview = cached
+                pdf, pages, fields = cached[1]
+                st.download_button("Download PDF", pdf, f"forecast-{run.run_id[:8]}.pdf", "application/pdf")
+                st.caption("Select a highlighted passage to edit it. Save as new revision to update the PDF.")
+                editor = components.declare_component("report_pdf_editor", path=str(Path(__file__).parent / "src/pge_agent/pdf_editor"))
+                change = editor(run_id=run.run_id, pages=pages, fields=fields, key=run.run_id)
+                if change and change.get("parent") == run.run_id:
+                    revision = revised_report(run, change["edits"])
+                    store.save(revision)
+                    st.session_state.current = st.session_state.parent = revision.run_id
+                    st.rerun()
+            except BrowserError:
+                st.error("PDF rendering requires Chrome or Chromium. Run python -m playwright install chromium, then reopen the viewer.")
+            except ValueError as exc:
+                st.error(str(exc))
+        else:
+            import streamlit.components.v1 as components
+            components.html(html,height=850,scrolling=True)
         reviewer=st.text_input("Reviewer name")
         if st.button("Mark this revision reviewed",disabled=bool(run.validation_errors)):
             try:

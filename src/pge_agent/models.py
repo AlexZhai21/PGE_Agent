@@ -215,6 +215,7 @@ class Assessment(Record):
 
 
 class AssessmentRun(Record):
+    report_edits: dict[str, str] = Field(default_factory=dict)
     run_id: str = Field(default_factory=lambda: uuid4().hex)
     parent_run_id: str | None = None
     generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

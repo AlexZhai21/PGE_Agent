@@ -54,7 +54,7 @@ A static fixture matches its original project record exactly. Editing it returns
 - [Project Report Template Mockup](https://drive.google.com/file/d/1I6MbMMJTrPWSRw5XwNsV2O79pdxfOcFP/view)
 - [Morro Bay AA intake example](https://drive.google.com/file/d/1DDOdzqVfhlARRbJuRtPqkuIUtsqvcC6_/view)
 
-The report reproduces the mockup's section order, portrait format, blue headings/table headers, and confidentiality footer. Tables flow across pages rather than reproducing the mockup's clipped placeholders. References, component versions, open questions, and demo status are included. HTML/JSON exports are supported; direct PDF generation is not built in.
+The report reproduces the mockup's section order, portrait format, blue headings/table headers, and confidentiality footer. Tables flow across pages rather than reproducing the mockup's clipped placeholders. References, component versions, open questions, and demo status are included. The report tab also includes an editable PDF viewer and PDF download. Open **Open editable PDF**, select a highlighted passage or use the passage menu, edit its text, and choose **Save as new revision**. The child draft retains its parent and the original calculations. For a numerical change, edit the project inputs and regenerate the forecast. The PDF renderer uses a local Chrome installation or Chromium installed with `python -m playwright install chromium`.
 
 ## Current limits and unresolved rules
 

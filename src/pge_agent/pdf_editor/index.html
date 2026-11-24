@@ -1,0 +1,23 @@
+<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>Edit forecast PDF</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font:15px system-ui;color:#172d40}header{padding:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}button,select,textarea{font:inherit}button,select{padding:7px;border:1px solid #9daeb9;border-radius:5px;background:white}button:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #075cad}#save{background:#24577d;color:white}button:disabled{opacity:.58}main{overflow:auto;height:590px;background:#e5e9ed;padding:10px}.sheet{position:relative;width:min(100%,790px);margin:auto}.sheet img{width:100%;display:block}.field{position:absolute;background:rgba(30,134,190,.12);border:0;border-bottom:1px dashed #24618a;padding:0;border-radius:0;cursor:text}.field:hover{background:rgba(30,134,190,.25)}textarea{width:100%;min-height:5em;padding:8px}#panel{padding:8px;background:#eff6fa}label{display:block;margin-bottom:4px}
+</style><header><button id="prev" aria-label="Previous page">‹</button><span id="number"></span><button id="next" aria-label="Next page">›</button><select id="jump" aria-label="Edit a report passage"></select><button id="save" disabled>Save as new revision</button><span id="status" role="status"></span></header>
+<div id="panel" hidden><label for="input" id="label"></label><textarea id="input" maxlength="5000"></textarea><button id="done">Done editing</button></div>
+<main><div class="sheet" id="sheet"></div></main>
+<script>
+const $=id=>document.getElementById(id);
+const send=(type,data={})=>parent.postMessage({isStreamlitMessage:true,type:'streamlit:'+type,...data},'*');
+let args, page=0, active=null, edits={};
+const title=k=>k.replaceAll('_',' ').replace(/\d+$/,n=>Number(n)+1);
+function sync(){const dirty=Object.keys(edits).length;$('save').disabled=!dirty||Object.values(edits).some(v=>!v.trim());$('status').textContent=dirty?dirty+' unsaved passage(s)':'';}
+function edit(k){active=k;$('panel').hidden=false;$('label').textContent='Edit '+title(k);$('input').value=edits[k]??args.fields[k];$('input').focus();}
+function show(){const p=args.pages[page];$('sheet').replaceChildren();const img=new Image();img.alt='Forecast report page '+(page+1);img.src='data:image/png;base64,'+p.image;$('sheet').append(img);
+for(const r of p.regions){const b=document.createElement('button');b.className='field';b.ariaLabel='Edit '+title(r.key);b.title=b.ariaLabel;Object.assign(b.style,{left:100*r.x+'%',top:100*r.y+'%',width:100*r.w+'%',height:100*r.h+'%'});b.onclick=()=>edit(r.key);$('sheet').append(b);}
+$('number').textContent=(page+1)+' / '+args.pages.length;$('prev').disabled=page===0;$('next').disabled=page===args.pages.length-1;document.querySelector('main').scrollTop=0;}
+$('prev').onclick=()=>{page--;show()};$('next').onclick=()=>{page++;show()};
+$('input').oninput=()=>{const v=$('input').value;if(v===args.fields[active])delete edits[active];else edits[active]=v;sync()};
+$('done').onclick=()=>{$('panel').hidden=true;$('jump').focus()};
+$('jump').onchange=()=>{const k=$('jump').value;if(!k)return;const i=args.pages.findIndex(p=>p.regions.some(r=>r.key===k));if(i>=0){page=i;show()}edit(k);$('jump').value=''};
+$('save').onclick=()=>{send('setComponentValue',{value:{parent:args.run_id,edits},dataType:'json'})};
+window.addEventListener('message',e=>{if(e.source!==parent||e.data.type!=='streamlit:render')return;const fresh=args?.run_id!==e.data.args.run_id;args=e.data.args;if(fresh){page=0;edits={};$('panel').hidden=true;$('jump').replaceChildren(new Option('Edit a passage…',''));for(const k of Object.keys(args.fields))$('jump').add(new Option(title(k),k));show();sync()}send('setFrameHeight',{height:850})});send('componentReady',{apiVersion:1});
+</script></html>

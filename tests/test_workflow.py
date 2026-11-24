@@ -186,3 +186,21 @@ def test_autofill_skips_conflicts_existing_values_and_missing_facts():
              fact("voltage_kv", 230), fact("project_manager", "Example"),
              fact("core_team", None)]
     assert [f.field for f in autofill_candidates(ProjectRecord(project_name="Edited"), facts)] == ["project_manager"]
+
+
+def test_pdf_revision_preserves_parent_and_forecast(tmp_path):
+    from pge_agent.pdf_review import revised_report
+    store = RunStore(tmp_path)
+    parent = demo_run()
+    store.save(parent)
+    child = revised_report(parent, {"summary_0": "Engineer revised the summary."})
+    store.save(child)
+    reopened = store.get(child.run_id)
+    assert reopened.parent_run_id == parent.run_id
+    assert reopened.forecast == parent.forecast
+    assert reopened.review_status == "draft"
+    assert "Engineer revised the summary." in render_report(reopened)
+    assert "Engineer revised the summary." not in render_report(store.get(parent.run_id))
+    assert any(c["field"] == "report_edits.summary_0" for c in compare_runs(parent, reopened))
+    with pytest.raises(ValueError):
+        revised_report(child, {"hours.total": "500"})

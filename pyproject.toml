@@ -7,7 +7,7 @@ name = "pge-agent"
 version = "0.1.0"
 description = "DSS Group 3 local project intake and forecast report prototype"
 requires-python = ">=3.11"
-dependencies = ["streamlit>=1.40,<2", "pydantic>=2.10,<3", "jinja2>=3.1.6,<4", "pypdf>=6,<8"]
+dependencies = ["streamlit>=1.40,<2", "pydantic>=2.10,<3", "jinja2>=3.1.6,<4", "pypdf>=6,<8", "playwright>=1.50,<2", "pymupdf>=1.25,<3"]
 
 [project.optional-dependencies]
 test = ["pytest>=8,<10"]
@@ -19,7 +19,7 @@ pge-agent = "pge_agent.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-pge_agent = ["templates/*.html"]
+pge_agent = ["templates/*.html", "pdf_editor/*.html"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

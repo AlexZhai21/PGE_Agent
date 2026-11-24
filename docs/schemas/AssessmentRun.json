@@ -1444,6 +1444,13 @@
       "title": "Schema Version",
       "type": "string"
     },
+    "report_edits": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Report Edits",
+      "type": "object"
+    },
     "run_id": {
       "title": "Run Id",
       "type": "string"
