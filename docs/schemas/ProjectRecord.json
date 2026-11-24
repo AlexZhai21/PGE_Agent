@@ -1,0 +1,323 @@
+{
+  "$defs": {
+    "MaterialInput": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "quantity": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quantity"
+        },
+        "lead_weeks": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lead Weeks"
+        },
+        "need_by": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Need By"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "MaterialInput",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "project_name": {
+      "default": "",
+      "title": "Project Name",
+      "type": "string"
+    },
+    "project_number": {
+      "default": "",
+      "title": "Project Number",
+      "type": "string"
+    },
+    "requestor": {
+      "default": "",
+      "title": "Requestor",
+      "type": "string"
+    },
+    "project_type": {
+      "default": "",
+      "title": "Project Type",
+      "type": "string"
+    },
+    "voltage_kv": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Voltage Kv"
+    },
+    "structures": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Structures"
+    },
+    "line_miles": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Line Miles"
+    },
+    "terrain": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Terrain"
+    },
+    "hftd_tier": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Hftd Tier"
+    },
+    "permitting": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Permitting"
+    },
+    "outage_required": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Outage Required"
+    },
+    "project_start": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Project Start"
+    },
+    "in_service_date": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "In Service Date"
+    },
+    "project_completion": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Project Completion"
+    },
+    "target_ifc": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Target Ifc"
+    },
+    "construction_start": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Construction Start"
+    },
+    "project_manager": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Project Manager"
+    },
+    "core_team": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Core Team"
+    },
+    "stakeholders": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "title": "Stakeholders",
+      "type": "object"
+    },
+    "contracted_engineering": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Contracted Engineering"
+    },
+    "materials": {
+      "items": {
+        "$ref": "#/$defs/MaterialInput"
+      },
+      "title": "Materials",
+      "type": "array"
+    },
+    "proposed_milestones": {
+      "additionalProperties": {
+        "format": "date",
+        "type": "string"
+      },
+      "title": "Proposed Milestones",
+      "type": "object"
+    },
+    "engineer_risks": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Engineer Risks",
+      "type": "array"
+    },
+    "scope": {
+      "default": "",
+      "title": "Scope",
+      "type": "string"
+    }
+  },
+  "title": "ProjectRecord",
+  "type": "object"
+}

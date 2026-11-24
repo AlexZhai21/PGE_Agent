@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "input_fingerprint": "70ed1a6873686727056e9c76bbfdd47ddf0d746eb45a809384a00fd3f9126bb1",
+  "provider_version": "demo-history-1",
+  "status": "demo",
+  "comparables": [
+    {
+      "schema_version": "1.0",
+      "project_id": "SYNTHETIC-PAST-01",
+      "hours": 100.0,
+      "similarity": 0.8,
+      "rationale": "Invented matching project for integration demonstration only.",
+      "evidence_ids": [
+        "demo-basis"
+      ],
+      "basis": "synthetic"
+    }
+  ],
+  "evidence": [
+    {
+      "schema_version": "1.0",
+      "evidence_id": "demo-basis",
+      "field": "fixture",
+      "value": "synthetic",
+      "units": null,
+      "original_text": "Invented example: 100 total hours allocated 10/20/30/25/10/5; illustrative dates only.",
+      "origin": "synthetic",
+      "document_id": null,
+      "page": null,
+      "status": "confirmed",
+      "reason": null
+    }
+  ],
+  "limitations": [
+    "No real historical project was retrieved."
+  ]
+}

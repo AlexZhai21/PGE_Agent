@@ -1,0 +1,333 @@
+{
+  "schema_version": "1.0",
+  "input_fingerprint": "70ed1a6873686727056e9c76bbfdd47ddf0d746eb45a809384a00fd3f9126bb1",
+  "provider_version": "demo-forecast-1",
+  "status": "demo",
+  "rule_version": "synthetic-fixture-1",
+  "schedule_buffer_days": 45,
+  "recommended_start": "2027-01-04",
+  "duration_weeks": 20.0,
+  "buffered_ifc": "2027-04-17",
+  "schedule_status": "Illustrative dates; not a feasibility determination",
+  "critical_path_warning": "Confirm all dates with a supported forecasting engine.",
+  "critical_path_drivers": [],
+  "milestones": [
+    {
+      "schema_version": "1.0",
+      "name": "Internal IFC Complete",
+      "requested": null,
+      "internal_target": "2027-04-17",
+      "external_forecast": "2027-06-01",
+      "status": "Synthetic",
+      "notes": ""
+    }
+  ],
+  "phases": [
+    {
+      "schema_version": "1.0",
+      "name": "Design",
+      "duration_weeks": 20.0,
+      "hours": 85.0,
+      "key_milestones": "Synthetic design milestones"
+    }
+  ],
+  "hours": {
+    "schema_version": "1.0",
+    "phases": {
+      "Scoping": 10.0,
+      "30% Design": 20.0,
+      "60% Design": 30.0,
+      "90% / IFC": 25.0,
+      "Construction Support": 10.0,
+      "Closeout": 5.0
+    },
+    "total": 100.0,
+    "low": 80.0,
+    "high": 120.0,
+    "confidence": "Illustrative; not calibrated",
+    "notes": "Synthetic phase allocation."
+  },
+  "materials": [
+    {
+      "schema_version": "1.0",
+      "name": "Synthetic conductor",
+      "lead_weeks": 12.0,
+      "need_by": "2027-07-06",
+      "order_by": "2027-04-13",
+      "buffered_order_by": "2027-03-30",
+      "engineering_action_date": null,
+      "critical_path": "Needs review",
+      "status": "Synthetic",
+      "notes": ""
+    }
+  ],
+  "risks": [
+    {
+      "schema_version": "1.0",
+      "description": "Unconfirmed material lead time",
+      "likelihood": "Not assessed",
+      "impact": "May affect construction",
+      "mitigation": "Confirm with Supply Chain",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "schema_version": "1.0",
+      "role": "Engineer",
+      "expected_load": "Needs capacity review",
+      "notes": "No FTE estimate"
+    }
+  ],
+  "resource_overview": "Unavailable",
+  "capacity_concerns": [],
+  "permits": [],
+  "permitting_summary": "Unavailable",
+  "roadblocks": [],
+  "critical_path_summary": "Unavailable",
+  "next_steps": [
+    "Review input facts and replace demonstration adapters with supported components."
+  ],
+  "assumptions": [
+    "All numbers and dates are invented fixtures, not approved PG&E rules.",
+    "The template's 30-day buffer and meeting notes' 45-day buffer require reconciliation."
+  ],
+  "calculations": [
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-0",
+      "description": "Static synthetic fixture: schedule_buffer_days",
+      "value": 45.0,
+      "unit": "see output field",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-1",
+      "description": "Static synthetic fixture: recommended_start",
+      "value": "2027-01-04",
+      "unit": "date",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-2",
+      "description": "Static synthetic fixture: duration_weeks",
+      "value": 20.0,
+      "unit": "see output field",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-3",
+      "description": "Static synthetic fixture: buffered_ifc",
+      "value": "2027-04-17",
+      "unit": "date",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-4",
+      "description": "Static synthetic fixture: milestones.0.internal_target",
+      "value": "2027-04-17",
+      "unit": "date",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-5",
+      "description": "Static synthetic fixture: milestones.0.external_forecast",
+      "value": "2027-06-01",
+      "unit": "date",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-6",
+      "description": "Static synthetic fixture: phases.0.duration_weeks",
+      "value": 20.0,
+      "unit": "see output field",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-7",
+      "description": "Static synthetic fixture: phases.0.hours",
+      "value": 85.0,
+      "unit": "see output field",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-8",
+      "description": "Static synthetic fixture: hours.phases.Scoping",
+      "value": 10.0,
+      "unit": "see output field",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-9",
+      "description": "Static synthetic fixture: hours.phases.30% Design",
+      "value": 20.0,
+      "unit": "see output field",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-10",
+      "description": "Static synthetic fixture: hours.phases.60% Design",
+      "value": 30.0,
+      "unit": "see output field",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-11",
+      "description": "Static synthetic fixture: hours.phases.90% / IFC",
+      "value": 25.0,
+      "unit": "see output field",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-12",
+      "description": "Static synthetic fixture: hours.phases.Construction Support",
+      "value": 10.0,
+      "unit": "see output field",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-13",
+      "description": "Static synthetic fixture: hours.phases.Closeout",
+      "value": 5.0,
+      "unit": "see output field",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-14",
+      "description": "Static synthetic fixture: hours.total",
+      "value": 100.0,
+      "unit": "see output field",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-15",
+      "description": "Static synthetic fixture: hours.low",
+      "value": 80.0,
+      "unit": "see output field",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-16",
+      "description": "Static synthetic fixture: hours.high",
+      "value": 120.0,
+      "unit": "see output field",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-17",
+      "description": "Static synthetic fixture: materials.0.lead_weeks",
+      "value": 12.0,
+      "unit": "see output field",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-18",
+      "description": "Static synthetic fixture: materials.0.need_by",
+      "value": "2027-07-06",
+      "unit": "date",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-19",
+      "description": "Static synthetic fixture: materials.0.order_by",
+      "value": "2027-04-13",
+      "unit": "date",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "calculation_id": "fixture-20",
+      "description": "Static synthetic fixture: materials.0.buffered_order_by",
+      "value": "2027-03-30",
+      "unit": "date",
+      "evidence_ids": [
+        "demo-basis"
+      ]
+    }
+  ],
+  "numeric_refs": {
+    "schedule_buffer_days": "fixture-0",
+    "recommended_start": "fixture-1",
+    "duration_weeks": "fixture-2",
+    "buffered_ifc": "fixture-3",
+    "milestones.0.internal_target": "fixture-4",
+    "milestones.0.external_forecast": "fixture-5",
+    "phases.0.duration_weeks": "fixture-6",
+    "phases.0.hours": "fixture-7",
+    "hours.phases.Scoping": "fixture-8",
+    "hours.phases.30% Design": "fixture-9",
+    "hours.phases.60% Design": "fixture-10",
+    "hours.phases.90% / IFC": "fixture-11",
+    "hours.phases.Construction Support": "fixture-12",
+    "hours.phases.Closeout": "fixture-13",
+    "hours.total": "fixture-14",
+    "hours.low": "fixture-15",
+    "hours.high": "fixture-16",
+    "materials.0.lead_weeks": "fixture-17",
+    "materials.0.need_by": "fixture-18",
+    "materials.0.order_by": "fixture-19",
+    "materials.0.buffered_order_by": "fixture-20"
+  },
+  "evidence": []
+}

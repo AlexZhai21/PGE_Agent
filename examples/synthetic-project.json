@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "project_name": "SYNTHETIC - Cedar Line Demo",
+  "project_number": "DEMO-001",
+  "requestor": "Demo engineer",
+  "project_type": "T-line pole replacement",
+  "voltage_kv": 115.0,
+  "structures": 10,
+  "line_miles": 1.5,
+  "terrain": "Flat",
+  "hftd_tier": "Not specified",
+  "permitting": "Engineer review required",
+  "outage_required": true,
+  "project_start": null,
+  "in_service_date": null,
+  "project_completion": null,
+  "target_ifc": "2027-06-01",
+  "construction_start": "2028-02-01",
+  "project_manager": null,
+  "core_team": null,
+  "stakeholders": {
+    "Transmission planning": false,
+    "Distribution planning": false,
+    "Transmission operations": false,
+    "Distribution operations": false,
+    "Fiber engineering": false,
+    "Substation engineering": false
+  },
+  "contracted_engineering": false,
+  "materials": [
+    {
+      "schema_version": "1.0",
+      "name": "Synthetic conductor",
+      "quantity": null,
+      "lead_weeks": 12.0,
+      "need_by": "2027-07-06"
+    }
+  ],
+  "proposed_milestones": {},
+  "engineer_risks": [],
+  "scope": ""
+}

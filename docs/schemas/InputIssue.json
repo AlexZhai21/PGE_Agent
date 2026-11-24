@@ -1,0 +1,46 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "field": {
+      "title": "Field",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "missing",
+        "conflict",
+        "unsupported",
+        "warning"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "question": {
+      "title": "Question",
+      "type": "string"
+    },
+    "owner": {
+      "title": "Owner",
+      "type": "string"
+    },
+    "affected_output": {
+      "title": "Affected Output",
+      "type": "string"
+    }
+  },
+  "required": [
+    "field",
+    "kind",
+    "question",
+    "owner",
+    "affected_output"
+  ],
+  "title": "InputIssue",
+  "type": "object"
+}

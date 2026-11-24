@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>T-Line Project Forecast Report</title>
+<style>
+@page {
+ size: Letter; margin: .65in .75in .7in;
+ @top-right { content:"T-Line Project Forecast Report"; font:8pt Arial,sans-serif; color:#666; }
+ @bottom-center { content:"PG&E Internal — Confidential\A Internal"; white-space:pre; font:8pt Arial,sans-serif; color:#777; }
+}
+* { box-sizing:border-box; }
+body { color:#161616; font:11pt Arial,Helvetica,sans-serif; margin:0; background:#eee; }
+.paper { max-width:8.5in; margin:24px auto; padding:.65in .75in; background:white; }
+h1 { font-size:14pt; color:#24577d; margin-top:42px; }
+h2 { font-size:14pt; color:#24577d; margin:18px 0 8px; break-after:avoid; }
+h3 { font-size:11pt; margin:16px 0 7px; break-after:avoid; }
+p, li { line-height:1.4; } ul,ol { padding-left:23px; }
+table { width:100%; border-collapse:collapse; margin:8px 0 14px; table-layout:fixed; font-size:10pt; }
+th,td { border:1px solid #d6d6d6; padding:5px 7px; text-align:left; vertical-align:top; overflow-wrap:anywhere; }
+th { background:#24577d; color:white; font-weight:600; }
+.snapshot th,.hours th { color:#161616; background:#f0f0f0; width:48%; }
+.total th,.total td { background:#d9e2f3; font-weight:bold; }
+tr { break-inside:avoid; } thead { display:table-header-group; }
+.header { color:#666; font-size:8pt; text-align:right; margin-bottom:25px; }
+.footer { color:#777; font-size:8pt; text-align:center; padding-top:24px; }
+.footer small { color:#333; display:block; margin-top:6px; }
+.cover { min-height:8.7in; display:flex; flex-direction:column; }
+.cover .footer { margin-top:auto; }
+.notice { padding:8px 10px; background:#fff5d9; border-left:3px solid #b47c00; font-size:10pt; }
+.error { border-left-color:#a32121; background:#fff0f0; }
+.muted { color:#555; font-size:9pt; }
+.source { font-size:9pt; overflow-wrap:anywhere; }
+.section { break-inside:auto; }
+@media print {
+ body { background:white; font-size:10pt; }
+ .paper { margin:0; padding:0; max-width:none; }
+ .cover { min-height:9.3in; break-after:page; }
+ .header, .footer { display:none; }
+ p:has(+ ul), p:has(+ ol) { break-after:avoid; }
+ .main { padding-top:8px; }
+ th { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+ .notice,.total th,.total td,.snapshot th,.hours th { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+}
+</style></head><body><article class="paper">
+<div class="header report-header">T-Line Project Forecast Report</div>
+<section class="cover">
+<h1>T-LINE PROJECT FORECAST REPORT</h1>
+<p>{{ p.project_name|display }}</p>
+<table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>
+<tr><td>PG&amp;E project number</td><td>{{ p.project_number|display }}</td></tr>
+<tr><td>Requestor</td><td>{{ p.requestor|display }}</td></tr>
+<tr><td>Generated</td><td>{{ run.generated_at.isoformat() }}</td></tr>
+<tr><td>Run ID</td><td>{{ run.run_id }}</td></tr>
+</tbody></table>
+<p class="notice">{% if run.demo %}<strong>SYNTHETIC DEMONSTRATION — NOT A PG&amp;E FORECAST.</strong><br>{% endif %}
+Review status: {{ run.review_status }}{% if run.reviewer %} · Reviewed by {{ run.reviewer }}{% endif %}.
+{% if run.validation_errors %} Validation failed; results must not be relied upon.{% endif %}</p>
+<div class="footer">PG&amp;E Internal — Confidential<small>Internal</small></div>
+</section>
+<main class="main">
+<h2>Executive Summary</h2>
+{% for claim in run.assessment.summary %}<p>{{ claim.text }}{% if claim.assumption %} <span class="muted">(Limitation / assumption)</span>{% endif %}
+{% if claim.evidence_ids or claim.calculation_ids %}<br><span class="source">References: {{ (claim.evidence_ids + claim.calculation_ids)|join(', ') }}</span>{% endif %}</p>{% endfor %}
+{% if run.validation_errors %}<div class="notice error"><strong>Validation issues</strong><ul>{% for error in run.validation_errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+<h2>Project Snapshot</h2>
+<table class="snapshot"><tbody>
+{% for label,value in [('Project Type',p.project_type),('Voltage (kV)',p.voltage_kv),('Number of Structures',p.structures),('Line Miles',p.line_miles),('Terrain',p.terrain),('HFTD Tier',p.hftd_tier),('Permitting',p.permitting),('Outage Required',p.outage_required),('Target IFC Date',p.target_ifc)] %}<tr><th>{{ label }}</th><td>{{ value|display }}</td></tr>{% endfor %}
+</tbody></table>
+<h2>Recommended Timeline</h2>
+<p><strong>Recommended start:</strong> {{ f.recommended_start|display }}<br><strong>Total estimated duration:</strong> {{ f.duration_weeks|display }} weeks</p>
+<h3>Schedule Milestone Calculator</h3>
+<p>Target IFC Date: {{ p.target_ifc|display }}<br>Buffered IFC Date: {{ f.buffered_ifc|display }}<br>Schedule Buffer: {{ f.schedule_buffer_days|display }} calendar days<br><span class="muted">Rule version: {{ f.rule_version }}</span></p>
+<h3>Milestone Dates</h3>
+<table><thead><tr><th>Milestone</th><th>Requested</th><th>Internal target</th><th>External forecast</th><th>Status / Notes</th></tr></thead><tbody>
+{% for row in f.milestones %}<tr><td>{{ row.name }}</td><td>{{ row.requested|display }}</td><td>{{ row.internal_target|display }}</td><td>{{ row.external_forecast|display }}</td><td>{{ row.status }} {{ row.notes }}</td></tr>{% endfor %}
+{% for name in milestone_names %}{% if name not in f.milestones|map(attribute='name')|list %}<tr><td>{{ name }}</td><td>{% if name=='External Target IFC' %}{{ p.target_ifc|display }}{% else %}Not provided{% endif %}</td><td>Unavailable</td><td>Unavailable</td><td>Awaiting component result</td></tr>{% endif %}{% endfor %}
+</tbody></table>
+{% if p.proposed_milestones %}<p><strong>Engineer-proposed milestones (preserved inputs):</strong></p><ul>{% for name,dt in p.proposed_milestones.items() %}<li>{{ name }}: {{ dt }}</li>{% endfor %}</ul>{% endif %}
+<p><strong>Schedule Status:</strong> {{ f.schedule_status }}</p><p><strong>Critical Path Warning:</strong> {{ f.critical_path_warning }}</p>
+<h3>Phase breakdown</h3>
+<table><thead><tr><th>Phase</th><th>Duration (wks)</th><th>Hours</th><th>Key Milestones</th></tr></thead><tbody>{% for row in f.phases %}<tr><td>{{ row.name }}</td><td>{{ row.duration_weeks|display }}</td><td>{{ row.hours|display }}</td><td>{{ row.key_milestones }}</td></tr>{% else %}<tr><td colspan="4">Phase allocation unavailable; no allocation assumed.</td></tr>{% endfor %}</tbody></table>
+<p><strong>Critical path drivers:</strong></p><ul>{% for item in f.critical_path_drivers %}<li>{{ item }}</li>{% else %}<li>Unavailable</li>{% endfor %}</ul>
+<h2>Engineering Hours Forecast</h2>
+<table class="hours"><tbody>{% for phase in hour_categories %}<tr><th>{{ phase }}</th><td>{{ f.hours.phases.get(phase)|display }}</td></tr>{% endfor %}
+{% for phase,value in f.hours.phases.items() %}{% if phase not in hour_categories %}<tr><th>{{ phase }}</th><td>{{ value|display }}</td></tr>{% endif %}{% endfor %}
+<tr class="total"><th>TOTAL</th><td>{{ f.hours.total|display }}</td></tr></tbody></table>
+<p><strong>Low / high:</strong> {{ f.hours.low|display }} / {{ f.hours.high|display }}<br><strong>Confidence:</strong> {{ f.hours.confidence }}<br><strong>Comparable projects referenced:</strong> {{ run.history.comparables|map(attribute='project_id')|join(', ') or 'Unavailable' }}<br><strong>Notes:</strong> {{ f.hours.notes|display }}</p>
+<h2>Resource Plan</h2><p>{{ f.resource_overview }}</p>
+<table><thead><tr><th>Role</th><th>Expected Load</th><th>Notes</th></tr></thead><tbody>{% for row in f.resources %}<tr><td>{{ row.role }}</td><td>{{ row.expected_load }}</td><td>{{ row.notes }}</td></tr>{% else %}<tr><td colspan="3">Unavailable</td></tr>{% endfor %}</tbody></table>
+<p><strong>Internal capacity concerns:</strong></p><ul>{% for item in f.capacity_concerns %}<li>{{ item }}</li>{% else %}<li>Not assessed</li>{% endfor %}</ul>
+<h2>Long Lead Materials</h2>
+<table><thead><tr><th>Material</th><th>Lead (wks)</th><th>Critical Path</th><th>Order By</th></tr></thead><tbody>{% for row in f.materials %}<tr><td>{{ row.name }}</td><td>{{ row.lead_weeks|display }}</td><td>{{ row.critical_path }}</td><td>{{ row.order_by|display }}</td></tr>{% else %}<tr><td colspan="4">No supported material forecast available</td></tr>{% endfor %}</tbody></table>
+<h3>Material Schedule Table</h3>
+{% for row in f.materials %}<table class="snapshot"><tbody>{% for label,value in [('Material',row.name),('Lead Time Weeks',row.lead_weeks),('Need-By Date',row.need_by),('Order-By Date',row.order_by),('Buffered Order-By Date',row.buffered_order_by),('Required Engineering Action Date',row.engineering_action_date),('Critical Path Impact',row.critical_path),('Status',row.status),('Notes',row.notes)] %}<tr><th>{{ label }}</th><td>{{ value|display }}</td></tr>{% endfor %}</tbody></table>{% else %}<p>Unavailable</p>{% endfor %}
+<h2>Permitting &amp; Regulatory</h2>
+<table><thead><tr><th>Permit</th><th>Turnaround (wks)</th><th>Notes</th></tr></thead><tbody>{% for row in f.permits %}<tr><td>{{ row.name }}</td><td>{{ row.turnaround_weeks|display }}</td><td>{{ row.notes }}</td></tr>{% else %}<tr><td colspan="3">Unavailable</td></tr>{% endfor %}</tbody></table><p>Schedule impact summary: {{ f.permitting_summary }}</p>
+<h2>Top Risks &amp; Concerns</h2>
+<table><thead><tr><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Mitigation</th></tr></thead><tbody>{% for row in f.risks %}<tr><td>{{ row.description }}<br><span class="source">{{ row.evidence_ids|join(', ') }}</span></td><td>{{ row.likelihood }}</td><td>{{ row.impact }}</td><td>{{ row.mitigation }}</td></tr>{% else %}<tr><td colspan="4">Not assessed</td></tr>{% endfor %}</tbody></table>
+{% if p.engineer_risks %}<p><strong>Engineer-added risks — awaiting assessment:</strong></p><ul>{% for risk in p.engineer_risks %}<li>{{ risk }}</li>{% endfor %}</ul>{% endif %}
+<h2>Roadblocks &amp; Critical Path</h2><p>Current known roadblocks:</p><ul>{% for item in f.roadblocks %}<li>{{ item }}</li>{% else %}<li>Not assessed</li>{% endfor %}</ul><p>Critical path summary: {{ f.critical_path_summary }}</p>
+<h2>Recommended Next Steps</h2><ol>{% for item in run.assessment.next_steps %}<li>{{ item }}</li>{% endfor %}</ol>
+<h2>Assumptions &amp; Caveats</h2><ul>{% for item in run.assessment.limitations %}<li>{{ item }}</li>{% endfor %}</ul>
+<h3>Open inputs and rule questions</h3><table><thead><tr><th>Question</th><th>Owner</th><th>Forecast impact</th></tr></thead><tbody>{% for issue in run.issues %}<tr><td>{{ issue.question }}</td><td>{{ issue.owner }}</td><td>{{ issue.affected_output }}</td></tr>{% endfor %}</tbody></table>
+<h3>Source basis</h3>
+{% for e in run.evidence %}<p class="source"><strong>{{ e.evidence_id }}</strong> · {{ e.origin }} · {{ e.field }} · {{ e.status }}{% if e.page %} · page {{ e.page }}{% endif %}<br>{{ e.original_text }}{% if e.reason %}<br>Correction note: {{ e.reason }}{% endif %}</p>{% else %}<p>No supporting source records supplied.</p>{% endfor %}
+{% for doc in run.documents %}<p class="source">Document: {{ doc.name }} · SHA-256: {{ doc.sha256 }}</p>{% endfor %}
+{% for row in run.history.comparables %}<p class="source">{{ row.project_id }} — {{ row.rationale }} Basis: {{ row.basis }}. Hours: {{ row.hours|display }}. References: {{ row.evidence_ids|join(', ') }}</p>{% endfor %}
+<h3>Calculation references</h3><table><thead><tr><th>ID</th><th>Basis</th><th>Value</th></tr></thead><tbody>{% for row in f.calculations %}<tr><td>{{ row.calculation_id }}</td><td>{{ row.description }}<br>{{ row.evidence_ids|join(', ') }}</td><td>{{ row.value }} {{ row.unit }}</td></tr>{% else %}<tr><td colspan="3">No calculations supplied.</td></tr>{% endfor %}</tbody></table>
+<p class="muted">This report was generated by the T-Line Project Forecast Agent prototype. Supported estimates use the sources and rule versions identified above; unavailable outputs remain unfilled. Treat as a planning baseline, not a commitment. Verify all material lead times with procurement and all permitting timelines with the relevant agencies before finalizing schedules.</p>
+</main><div class="footer report-footer">PG&amp;E Internal — Confidential<small>Internal</small></div>
+</article></body></html>
