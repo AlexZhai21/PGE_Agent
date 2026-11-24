@@ -38,8 +38,9 @@ class DocumentParser:
 
 
 class FactExtractor:
-    version = "labeled-fields-1"
+    version = "labeled-fields-2"
     patterns = {
+        "scope": r"(?im:^\s*[A-Z]\) Project Scope \(Full Project\)[ \t]*\r?\n)[ \t]*([^\r\n]+(?:\r?\n(?![ \t]*\r?\n)[^\r\n]+)*)",
         "project_name": r"Project Name:\s*([^\n\r]+)",
         "project_number": r"Project Number\s*\(T\.?Dot\):\s*(T\.\d+)",
         "project_manager": r"Project Manager:\s*(.*?)(?=Core Team|\n|\r)",
@@ -63,6 +64,11 @@ class FactExtractor:
                             continue
                     facts.append(self._fact(document, page.page, field, None if missing else value,
                                             match.group(0), "missing" if missing else "proposed"))
+                    if field == "scope":
+                        project_type = re.search(r"\bsubstation aging asset replacement project\b", value, re.I)
+                        if project_type:
+                            facts.append(self._fact(document, page.page, "project_type",
+                                                    project_type.group(), match.group(0), "proposed"))
                     # Voltage must come from the named project, not incidental site voltage.
                     if field == "project_name":
                         voltage = re.search(r"(\d+)\s*kV", value, re.I)
@@ -109,3 +115,15 @@ def track_corrections(before: ProjectRecord, after: ProjectRecord,
                     original_text=str(value), origin="user", status="confirmed",
                     reason=reason.strip() or "Entered by engineer"))
     return result
+
+
+def autofill_candidates(project, evidence):
+    """Only fill empty fields with one undisputed, source-backed value."""
+    grouped = {}
+    for fact in evidence:
+        if fact.origin == "document" and fact.status == "proposed" and fact.value is not None:
+            grouped.setdefault(fact.field, []).append(fact)
+    protected = {fact.field for fact in evidence if fact.status == "confirmed"}
+    return [facts[0] for field, facts in grouped.items()
+            if field not in protected and getattr(project, field) in (None, "")
+            and len({fact.value for fact in facts}) == 1]

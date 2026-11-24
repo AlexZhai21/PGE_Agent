@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from pge_agent.adapters import (FixtureForecaster, FixtureRetriever, JsonForecaster, JsonRetriever)
 from pge_agent.demo import STAKEHOLDERS, scenario
-from pge_agent.intake import DocumentParser, FactExtractor, apply_fact, track_corrections
+from pge_agent.intake import DocumentParser, FactExtractor, autofill_candidates, apply_fact, track_corrections
 from pge_agent.models import ProjectRecord, fingerprint
 from pge_agent.reporting import render_report
 from pge_agent.storage import RunStore
@@ -89,6 +89,15 @@ with tabs[0]:
 
 with tabs[1]:
     st.subheader("Source suggestions")
+    candidates = autofill_candidates(st.session_state.project, st.session_state.evidence)
+    if candidates and st.button(f"Autofill {len(candidates)} suggested fields", key="autofill"):
+        for candidate in candidates:
+            st.session_state.project, st.session_state.evidence = apply_fact(
+                st.session_state.project, st.session_state.evidence, candidate.evidence_id
+            )
+        st.session_state.editor_version += 1
+        st.session_state.current = None
+        st.rerun()
     for e in st.session_state.evidence:
         if e.origin != "document" or e.status == "superseded":
             continue
@@ -121,7 +130,7 @@ with tabs[1]:
         for name in dict.fromkeys(STAKEHOLDERS+list(values["stakeholders"])):
             choice=st.selectbox(name,["Unknown","Yes","No"],index={None:0,True:1,False:2}[values["stakeholders"].get(name)],key=f"{version}-{name}")
             stakeholder_values[name]={"Unknown":None,"Yes":True,"No":False}[choice]
-        scope=st.text_area("Scope",p.scope)
+        scope=st.text_area("Scope",p.scope,key=f"scope-{version}")
         materials=st.text_area("Materials (JSON list)",json.dumps(values["materials"],indent=2),help='Example: [{"name":"Conductor","lead_weeks":null,"need_by":null}]')
         milestones=st.text_area("Engineer-proposed milestone dates (JSON object)",json.dumps(values["proposed_milestones"],indent=2),help='Example: {"30% Design Complete":"2027-03-01"}')
         risks=st.text_area("Engineer-added risks (one per line)","\n".join(p.engineer_risks))

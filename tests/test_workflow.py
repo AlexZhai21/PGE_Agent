@@ -175,3 +175,14 @@ def test_text_pdf_parsing_preserves_pages():
     assert any('Page 2' in w for w in doc.warnings)
     facts=FactExtractor().extract(doc)
     assert next(e for e in facts if e.field=='voltage_kv').value==115
+
+
+def test_autofill_skips_conflicts_existing_values_and_missing_facts():
+    from pge_agent.intake import autofill_candidates
+    def fact(field, value):
+        return EvidenceItem(field=field, value=value, evidence_id=str(value),
+                            origin="document", original_text=str(value))
+    facts = [fact("project_name", "Existing"), fact("voltage_kv", 115),
+             fact("voltage_kv", 230), fact("project_manager", "Example"),
+             fact("core_team", None)]
+    assert [f.field for f in autofill_candidates(ProjectRecord(project_name="Edited"), facts)] == ["project_manager"]
